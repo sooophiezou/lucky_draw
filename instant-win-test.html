@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Draw Event</title>
+    <style>
+        /* 页面基础样式 */
+        body { 
+            font-family: 'Helvetica Neue', Arial, sans-serif; 
+            text-align: center; 
+            padding: 50px 20px; 
+            background: #f4f7f6; 
+            color: #333;
+        }
+
+        h1 { color: #2c3e50; margin-bottom: 10px; }
+        p { color: #7f8c8d; margin-bottom: 30px; }
+
+        /* 按钮样式 */
+        .btn { 
+            background-color: #e74c3c; /* 喜庆的红色 */
+            color: white; 
+            padding: 15px 40px; 
+            text-decoration: none; 
+            font-size: 18px; 
+            border: none; 
+            border-radius: 50px; /* 圆角按钮 */
+            cursor: pointer; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.95); }
+
+        /* --- 核心动效代码 (Loading Spinner) --- */
+        .loader {
+            border: 8px solid #f3f3f3; /* 浅灰底色 */
+            border-top: 8px solid #e74c3c; /* 红色转动条 */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1.5s linear infinite; /* 动效名字、时长、循环 */
+            margin: 20px auto; /* 居中 */
+            display: none; /* 默认隐藏 */
+        }
+
+        /* 定义旋转动画 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 结果样式 */
+        #result { margin-top: 30px; font-size: 24px; font-weight: bold; min-height: 50px;}
+        .win { color: #27ae60; font-size: 28px; } /* 绿色代表中奖 */
+        .lose { color: #95a5a6; } /* 灰色代表没中 */
+        
+        /* 正在抽奖的提示字 */
+        #status-text {
+            color: #e74c3c;
+            font-weight: bold;
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🍀 现场幸运抽奖 🍀</h1>
+    <p>Good Luck!</p>
+
+    <button id="drawBtn" class="btn" onclick="startDraw()">👆 点击抽奖 / Tap to Win</button>
+
+    <div id="loader" class="loader"></div>
+    <div id="status-text">正在开奖中... / Drawing...</div>
+
+    <div id="result"></div>
+
+    <script>
+        function startDraw() {
+            // 1. 隐藏按钮
+            document.getElementById("drawBtn").style.display = "none";
+            
+            // 2. 显示转圈圈和提示字
+            document.getElementById("loader").style.display = "block";
+            document.getElementById("status-text").style.display = "block";
+
+            // 3. 设置延迟 (2000毫秒 = 2秒)
+            setTimeout(function() {
+                showResult();
+            }, 2000); 
+        }
+
+        function showResult() {
+            // 隐藏动效
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("status-text").style.display = "none";
+
+            // --- 核心概率逻辑 ---
+            var winRate = 0.02; // 2% 中奖率 (测试时可改为 1.0)
+            var random = Math.random();
+            var resultDiv = document.getElementById("result");
+            
+            if (random < winRate) {
+                // 中奖
+                resultDiv.innerHTML = `
+                    <div class='win'>🎉 HUGE CONGRATS! 🎉</div>
+                    <div style='margin-top:10px; font-size:18px;'>你中奖了！<br>You won a prize!</div>
+                    <div style='margin-top:20px; font-size:14px; color:#555;'>请勿关闭页面，向工作人员出示<br>Please show this screen to staff</div>
+                `;
+            } else {
+                // 未中奖
+                resultDiv.innerHTML = `
+                    <div class='lose'>😔 哎呀，差一点点...</div>
+                    <div style='margin-top:10px;'>Better luck next time!</div>
+                    <div style='margin-top:20px;'>感谢参与 / Thanks for playing</div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
