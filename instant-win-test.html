@@ -3,47 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Huawei Earbuds Lucky Draw</title>
+    <title>Premium Lucky Draw | Huawei</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #ececec; padding-top: 40px; }
-        
-        /* 转盘外层容器 */
-        .wheel-box {
+        :root {
+            --primary-red: #e60012;
+            --deep-black: #1a1a1a;
+            --text-gold: #f7ef8a;
+        }
+
+        body { 
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            background-color: #000; 
+            color: #fff; 
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { color: var(--primary-red); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
+        .sub-title { color: #888; font-size: 14px; margin-bottom: 30px; }
+
+        /* 转盘外框 */
+        .wheel-outer {
             position: relative;
             width: 360px;
             height: 360px;
-            margin: 0 auto;
-            border: 10px solid #fff;
+            border: 8px solid #333;
             border-radius: 50%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 0 50px rgba(230, 0, 18, 0.2);
         }
 
-        /* 顶部指针 */
         .pointer {
             position: absolute;
-            top: -15px;
+            top: -20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 0;
-            height: 0;
+            width: 0; height: 0;
             border-left: 15px solid transparent;
             border-right: 15px solid transparent;
-            border-top: 30px solid #d32f2f; /* 红色指针 */
-            z-index: 10;
+            border-top: 35px solid var(--primary-red);
+            z-index: 20;
+            filter: drop-shadow(0 0 10px rgba(230, 0, 18, 0.8));
         }
 
         #wheelCanvas {
             border-radius: 50%;
-            transition: transform 5s cubic-bezier(0.1, 0, 0.1, 1);
+            transition: transform 5s cubic-bezier(0.15, 0, 0.1, 1);
         }
 
-        /* 中央点击按钮 */
         .spin-btn {
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: 70px; height: 70px;
-            background: #222;
+            background: var(--primary-red);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -51,52 +66,66 @@
             justify-content: center;
             font-weight: bold;
             cursor: pointer;
-            border: 4px solid #fff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 11;
+            border: 3px solid #fff;
+            z-index: 25;
+            box-shadow: 0 0 20px rgba(230,0,0,0.5);
             font-size: 14px;
         }
 
-        /* 结果弹窗样式 */
-        #overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 100;
-            justify-content: center; align-items: center;
-        }
-        .modal {
-            background: white;
-            padding: 40px;
-            border-radius: 25px;
-            max-width: 80%;
+        /* 奖品展示区 */
+        .prize-showcase {
+            margin-top: 40px;
+            background: var(--deep-black);
+            padding: 20px;
+            border-radius: 15px;
+            width: 320px;
+            border: 1px solid #333;
             text-align: center;
         }
-        .modal h2 { margin-top: 0; color: #333; }
-        .modal button {
-            margin-top: 20px;
-            padding: 10px 30px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
+
+        .prize-showcase img {
+            width: 100%; /* 这里显示你的800px原图 */
+            border-radius: 10px;
+            margin-bottom: 10px;
         }
 
-        .info { margin-top: 20px; color: #666; font-size: 14px; }
+        .prize-name { color: var(--text-gold); font-weight: bold; font-size: 18px; }
+
+        /* 弹窗 */
+        #overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 100; justify-content: center; align-items: center;
+        }
+        .modal {
+            background: #222; padding: 40px; border-radius: 20px; text-align: center;
+            border: 2px solid var(--primary-red); max-width: 80%;
+        }
+        .modal button {
+            background: var(--primary-red); color: white; border: none;
+            padding: 10px 25px; border-radius: 5px; margin-top: 20px; cursor: pointer;
+        }
+
+        .stock-tag { font-size: 12px; color: #555; margin-top: 15px; }
     </style>
 </head>
 <body>
 
-    <h1>🍀 Lucky Draw 🍀</h1>
-    <div class="wheel-box">
+    <h1>🏆 Grand Draw</h1>
+    <div class="sub-title">Spin to win your exclusive rewards</div>
+
+    <div class="wheel-outer">
         <div class="pointer"></div>
         <canvas id="wheelCanvas" width="360" height="360"></canvas>
-        <div class="spin-btn" id="spinBtn" onclick="startSpin()">SPIN</div>
+        <div class="spin-btn" onclick="startSpin()">SPIN</div>
     </div>
 
-    <p class="info" id="stockTip">Loading prizes...</p>
+    <div class="prize-showcase">
+        <img src="https://raw.githubusercontent.com/sooophiezou/lucky_draw/main/eirbuds.png" alt="Huawei Earbuds">
+        <div class="prize-name">HUAWEI FreeBuds 5i</div>
+        <div style="font-size:12px; color:#aaa; margin-top:5px;">High-Resolution Sound | Active Noise Cancellation</div>
+    </div>
+
+    <div class="stock-tag" id="stockInfo">Checking availability...</div>
 
     <div id="overlay">
         <div class="modal" id="modalContent"></div>
@@ -106,13 +135,18 @@
         const canvas = document.getElementById('wheelCanvas');
         const ctx = canvas.getContext('2d');
         
-        // 配置项
-        const sectors = ["THANKS", "THANKS", "THANKS", "PRIZE", "THANKS", "THANKS", "THANKS", "THANKS"];
-        const colors = ["#2d4c1e", "#f7ef8a", "#829415", "#e8e16d", "#2d4c1e", "#f7ef8a", "#829415", "#e8e16d"];
-        const winRate = 0.1; // 10%
-        const maxPrizes = 5;
+        // 配置：1个PRIZE, 1个One More Chance, 6个其他
+        const sectors = [
+            { text: "Very close! 🤏", color: "#1a1a1a" },
+            { text: "No luck today 😅", color: "#2a2a2a" },
+            { text: "One more chance ⚡", color: "#3a3a3a" },
+            { text: "PRIZE 🎁", color: "#e60012" }, // 奖品扇区
+            { text: "Very close! 🤏", color: "#1a1a1a" },
+            { text: "No luck today 😅", color: "#2a2a2a" },
+            { text: "Try again! 🔄", color: "#3a3a3a" },
+            { text: "No luck today 😅", color: "#2a2a2a" }
+        ];
 
-        // 加载图片并限制尺寸
         const prizeImg = new Image();
         prizeImg.crossOrigin = "anonymous";
         prizeImg.src = 'https://raw.githubusercontent.com/sooophiezou/lucky_draw/main/eirbuds.png';
@@ -121,105 +155,4 @@
         let isSpinning = false;
 
         function draw() {
-            const arc = (Math.PI * 2) / sectors.length;
-            ctx.clearRect(0, 0, 360, 360);
-
-            sectors.forEach((label, i) => {
-                const angle = i * arc;
-                // 绘制扇形
-                ctx.fillStyle = colors[i];
-                ctx.beginPath();
-                ctx.moveTo(180, 180);
-                ctx.arc(180, 180, 180, angle, angle + arc);
-                ctx.fill();
-                ctx.strokeStyle = "rgba(255,255,255,0.2)";
-                ctx.stroke();
-
-                // 绘制内容
-                ctx.save();
-                ctx.translate(180, 180);
-                ctx.rotate(angle + arc / 2);
-                
-                if (label === "PRIZE") {
-                    if (prizeImg.complete) {
-                        const size = 60; // 限制原图800px在此显示为60px
-                        ctx.drawImage(prizeImg, 90, -size/2, size, size);
-                    } else {
-                        ctx.fillStyle = "#333";
-                        ctx.fillText("PRIZE", 120, 10);
-                    }
-                } else {
-                    ctx.textAlign = "right";
-                    ctx.fillStyle = (colors[i] === "#2d4c1e") ? "#fff" : "#333";
-                    ctx.font = "bold 16px Arial";
-                    ctx.fillText(label, 150, 8);
-                }
-                ctx.restore();
-            });
-        }
-
-        prizeImg.onload = draw;
-        draw();
-
-        function updateStock() {
-            const won = parseInt(localStorage.getItem('wonCount_daily') || 0);
-            document.getElementById('stockTip').innerText = `Today's Remaining: ${maxPrizes - won}`;
-        }
-        updateStock();
-
-        function startSpin() {
-            if (isSpinning) return;
-
-            const won = parseInt(localStorage.getItem('wonCount_daily') || 0);
-            const canWin = (Math.random() < winRate) && (won < maxPrizes);
-            
-            isSpinning = true;
-            let targetIdx;
-
-            if (canWin) {
-                targetIdx = 3; // PRIZE 在数组中的索引
-            } else {
-                const thanksIdx = [0, 1, 2, 4, 5, 6, 7];
-                targetIdx = thanksIdx[Math.floor(Math.random() * thanksIdx.length)];
-            }
-
-            // 计算旋转：增加至少5圈，并停在目标中心
-            const sectorAngle = 360 / sectors.length;
-            const stopAngle = 360 - (targetIdx * sectorAngle) - (sectorAngle / 2);
-            const finalRotation = currentRotation + (360 * 5) + stopAngle - (currentRotation % 360);
-            
-            currentRotation = finalRotation;
-            canvas.style.transform = `rotate(${currentRotation}deg)`;
-
-            setTimeout(() => {
-                isSpinning = false;
-                showResult(canWin);
-            }, 5000);
-        }
-
-        function showResult(isWin) {
-            const overlay = document.getElementById('overlay');
-            const modal = document.getElementById('modalContent');
-            overlay.style.display = 'flex';
-
-            if (isWin) {
-                let won = parseInt(localStorage.getItem('wonCount_daily') || 0);
-                localStorage.setItem('wonCount_daily', won + 1);
-                updateStock();
-                modal.innerHTML = `
-                    <h2 style="color:#e74c3c">Congratulations!</h2>
-                    <img src="${prizeImg.src}" width="120">
-                    <p>You won the Huawei Earbuds!<br>Please show this to staff.</p>
-                    <button onclick="location.reload()">Claim Prize</button>
-                `;
-            } else {
-                modal.innerHTML = `
-                    <h2>Sorry!</h2>
-                    <p>Better luck next time!</p>
-                    <button onclick="location.reload()">Try Again</button>
-                `;
-            }
-        }
-    </script>
-</body>
-</html>
+            const arc = (Math
