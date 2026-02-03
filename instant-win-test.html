@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lucky Draw Event</title>
     <style>
-        /* 页面基础样式 */
         body { 
             font-family: 'Helvetica Neue', Arial, sans-serif; 
             text-align: center; 
@@ -19,55 +18,62 @@
 
         /* 按钮样式 */
         .btn { 
-            background-color: #e74c3c; /* 喜庆的红色 */
+            background-color: #e74c3c; 
             color: white; 
             padding: 15px 40px; 
-            text-decoration: none; 
             font-size: 18px; 
             border: none; 
-            border-radius: 50px; /* 圆角按钮 */
+            border-radius: 50px; 
             cursor: pointer; 
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: transform 0.1s;
         }
         .btn:active { transform: scale(0.95); }
+        .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
 
-        /* --- 核心动效代码 (Loading Spinner) --- */
+        /* 动画转圈 */
         .loader {
-            border: 8px solid #f3f3f3; /* 浅灰底色 */
-            border-top: 8px solid #e74c3c; /* 红色转动条 */
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #e74c3c;
             border-radius: 50%;
             width: 60px;
             height: 60px;
-            animation: spin 1.5s linear infinite; /* 动效名字、时长、循环 */
-            margin: 20px auto; /* 居中 */
-            display: none; /* 默认隐藏 */
+            animation: spin 1.5s linear infinite;
+            margin: 20px auto;
+            display: none;
         }
 
-        /* 定义旋转动画 */
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        /* 结果样式 */
-        #result { margin-top: 30px; font-size: 24px; font-weight: bold; min-height: 50px;}
-        .win { color: #27ae60; font-size: 28px; } /* 绿色代表中奖 */
-        .lose { color: #95a5a6; } /* 灰色代表没中 */
-        
-        /* 正在抽奖的提示字 */
-        #status-text {
-            color: #e74c3c;
-            font-weight: bold;
-            display: none;
-            margin-top: 10px;
+        /* 结果展示框 */
+        #result { margin-top: 30px; min-height: 200px; }
+        .result-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: inline-block;
+            max-width: 300px;
+            border: 2px solid #eee;
         }
+
+        .win-title { color: #2c3e50; font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+        .prize-img { width: 120px; margin: 15px 0; }
+        .lose-text { color: #7f8c8d; font-size: 18px; padding: 40px 0; }
+        
+        #status-text { color: #e74c3c; font-weight: bold; display: none; margin-top: 10px; }
+        
+        /* 管理员小字提示 */
+        .admin-info { font-size: 10px; color: #ccc; margin-top: 50px; }
     </style>
 </head>
 <body>
 
-    <h1>🍀 现场幸运抽奖 🍀</h1>
-    <p>Good Luck!</p>
+    <h1>🍀 Lucky Draw 🍀</h1>
+    <p>Win Your Huawei Earbuds</p>
 
     <button id="drawBtn" class="btn" onclick="startDraw()">👆 点击抽奖 / Tap to Win</button>
 
@@ -76,46 +82,68 @@
 
     <div id="result"></div>
 
+    <div class="admin-info" id="stockInfo"></div>
+
     <script>
+        // --- 初始化配置 ---
+        const MAX_PRIZES = 5; // 总奖品数
+        const WIN_RATE = 0.1; // 10% 中奖率
+
+        // 检查本地存储的中奖人数
+        let winCount = localStorage.getItem('wonCount') ? parseInt(localStorage.getItem('wonCount')) : 0;
+        updateStockDisplay();
+
+        function updateStockDisplay() {
+            document.getElementById('stockInfo').innerText = `剩余奖品名额 (Remaining): ${MAX_PRIZES - winCount}`;
+        }
+
         function startDraw() {
-            // 1. 隐藏按钮
             document.getElementById("drawBtn").style.display = "none";
-            
-            // 2. 显示转圈圈和提示字
+            document.getElementById("result").innerHTML = "";
             document.getElementById("loader").style.display = "block";
             document.getElementById("status-text").style.display = "block";
 
-            // 3. 设置延迟 (2000毫秒 = 2秒)
-            setTimeout(function() {
-                showResult();
-            }, 2000); 
+            setTimeout(showResult, 2000); 
         }
 
         function showResult() {
-            // 隐藏动效
             document.getElementById("loader").style.display = "none";
             document.getElementById("status-text").style.display = "none";
 
-            // --- 核心概率逻辑 ---
-            var winRate = 0.02; // 2% 中奖率 (测试时可改为 1.0)
-            var random = Math.random();
-            var resultDiv = document.getElementById("result");
+            let random = Math.random();
+            let resultDiv = document.getElementById("result");
             
-            if (random < winRate) {
-                // 中奖
+            // 中奖判定逻辑：随机数命中概率 且 还有剩余名额
+            if (random < WIN_RATE && winCount < MAX_PRIZES) {
+                // 更新中奖人数
+                winCount++;
+                localStorage.setItem('wonCount', winCount);
+                updateStockDisplay();
+
+                // 显示中奖页面 (匹配你图片的设计)
                 resultDiv.innerHTML = `
-                    <div class='win'>🎉 HUGE CONGRATS! 🎉</div>
-                    <div style='margin-top:10px; font-size:18px;'>你中奖了！<br>You won a prize!</div>
-                    <div style='margin-top:20px; font-size:14px; color:#555;'>请勿关闭页面，向工作人员出示<br>Please show this screen to staff</div>
+                    <div class="result-card">
+                        <div class="win-title">Congratulations!</div>
+                        <img src="https://via.placeholder.com/150/e74c3c/ffffff?text=Earbuds" class="prize-img" alt="Prize">
+                        <div style="font-size:14px; color:#666;">You won the Huawei Earbuds!<br>请向工作人员出示此页面</div>
+                    </div>
                 `;
             } else {
-                // 未中奖
+                // 显示未中奖页面
                 resultDiv.innerHTML = `
-                    <div class='lose'>😔 哎呀，差一点点...</div>
-                    <div style='margin-top:10px;'>Better luck next time!</div>
-                    <div style='margin-top:20px;'>感谢参与 / Thanks for playing</div>
+                    <div class="result-card">
+                        <div class="lose-text">Sorry, you miss the prize!</div>
+                        <div style="font-size:14px; color:#999;">Better luck next time!</div>
+                        <button onclick="location.reload()" style="margin-top:20px; border:none; background:none; color:#3498db; cursor:pointer;">再试一次 / Try Again</button>
+                    </div>
                 `;
             }
+        }
+
+        // 管理员重置函数 (在浏览器F12控制台输入即可)
+        function resetPrizes() {
+            localStorage.setItem('wonCount', 0);
+            location.reload();
         }
     </script>
 </body>
